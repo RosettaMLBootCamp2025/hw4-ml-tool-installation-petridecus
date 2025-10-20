@@ -1,0 +1,44 @@
+{
+  "tests": [
+    {
+      "name": "Report Exists",
+      "setup": "",
+      "run": "python verify_installation.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 25
+    },
+    {
+      "name": "Report Has Content",
+      "setup": "",
+      "run": "python -c \"import json; results = json.load(open('verification_result.json')); exit(0 if results.get('report_has_content') else 1)\"",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 25
+    },
+    {
+      "name": "Student Info Provided",
+      "setup": "",
+      "run": "python -c \"import json; results = json.load(open('verification_result.json')); exit(0 if results.get('student_name_filled') and results.get('has_cluster_info') else 1)\"",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 25
+    },
+    {
+      "name": "Report Format Check",
+      "setup": "",
+      "run": "test -f installation_report.txt && grep -q 'Successfully Installed Tools' installation_report.txt && grep -q 'Installation Challenges' installation_report.txt",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 25
+    }
+  ]
+}

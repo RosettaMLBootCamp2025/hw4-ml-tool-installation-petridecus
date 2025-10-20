@@ -1,0 +1,63 @@
+name: Autograding Tests
+on:
+  - push
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]' && github.repository != 'RosettaMLBootCamp2025/HW4-ML-tool-installation'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Report Exists
+      id: report-exists
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Report Exists
+        setup-command: ''
+        command: python verify_installation.py
+        timeout: 10
+        max-score: 25
+    - name: Report Has Content
+      id: report-has-content
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Report Has Content
+        setup-command: ''
+        command: python -c "import json; results = json.load(open('verification_result.json')); exit(0 if results.get('report_has_content') else 1)"
+        timeout: 10
+        max-score: 25
+    - name: Student Info Provided
+      id: student-info-provided
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Student Info Provided
+        setup-command: ''
+        command: python -c "import json; results = json.load(open('verification_result.json')); exit(0 if results.get('student_name_filled') and results.get('has_cluster_info') else 1)"
+        timeout: 10
+        max-score: 25
+    - name: Report Format Check
+      id: report-format-check
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Report Format Check
+        setup-command: ''
+        command: test -f installation_report.txt && grep -q 'Successfully Installed Tools' installation_report.txt && grep -q 'Installation Challenges' installation_report.txt
+        timeout: 10
+        max-score: 25
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        REPORT-EXISTS_RESULTS: "${{steps.report-exists.outputs.result}}"
+        REPORT-HAS-CONTENT_RESULTS: "${{steps.report-has-content.outputs.result}}"
+        STUDENT-INFO-PROVIDED_RESULTS: "${{steps.student-info-provided.outputs.result}}"
+        REPORT-FORMAT-CHECK_RESULTS: "${{steps.report-format-check.outputs.result}}"
+      with:
+        runners: report-exists,report-has-content,student-info-provided,report-format-check
